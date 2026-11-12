@@ -1,0 +1,99 @@
+# Written by make_packs_index.py: do not edit by hand
+format = 1
+
+[packs.Aurora]
+name = "Aurora"
+version = "0.1"
+author = "Kohavi"
+license = "GPL-3.0-or-later AND CC-BY-4.0 AND CC0-1.0"
+description = "Bright and natural: a deep blue sky with white volumetric clouds, sunbeams through the leaves, soft shadows, glowing foliage, sparkling mirror water and warm lanterns at night. Potato to Ultra profiles."
+files = [
+    "81e49d2f65c887896d8e0c84df1ba15308f125275844c5d70ae41eb49480b1d9 14106 include/atmosphere.glsl",
+    "d1018d5347aef05482469db442247409dc594d512db1681dafbc12f2448d2c04 6341 include/clouds.glsl",
+    "106a175115e4dca6e709bca1ffc3dcbc0c2f8f3142ec5c3de6b2f930d08d9474 6053 include/common.glsl",
+    "6e2ff315a909943aae2d28020ee81a9b16b0083df915ab7d907818c0e52cd951 9949 include/fog.glsl",
+    "eac67a18efd951bc50eb638a74086226901e1ddfadad950820112d1629ab31a8 2528 include/grade.glsl",
+    "663ebdc8ec1d5d3eb7c102eb0cb8d296303a4c2288c6159d560fb49210395efb 9803 include/light.glsl",
+    "5050a527df88d2ee9f4d3ece7042ae0234e544ecba6fbc5f8449f2010d1afbda 3038 include/quality.glsl",
+    "be8922799aead8d48fcae1f535c5d947b92436868d8d0de6ffca432c540872bd 2295 include/rainbow.glsl",
+    "24b669b5a2c64f6839d9df620e793b8f5a7cc871f68bdb6f27f7538813beb40b 4381 include/shadows.glsl",
+    "ebfb87ef24f78f34a418aa6790581774fcf5f8215954b4a46f8acc2f951337e1 6570 include/water.glsl",
+    "29a670ae251e42609639ec2bbfe4ecb634f5e4a7417d88d5e8ab04962cca8e00 35413 LICENSE.txt",
+    "b3ce5d2178a64078ee3475bd4d3cd51ae549b14f03572998f05dfab447e867e3 13059 pack.toml",
+    "504e423c47dfb011d3b08364ebc7544c290d1730b7bce1fdd5cb00ff5a593667 649 passes/00_noise.frag",
+    "714605c2e531d003cd744592d93ce5c7ff7e495a438a92d76d96159e0809f4d4 1684 passes/02_state.frag",
+    "0b40a0b74b7e5ba0df758a8edb29646b074c7a5d311111bdcc8c584b8e7fd310 868 passes/08_skymap.frag",
+    "8a9cf07da5e8d670c88712dd99cd51d455926a74845a2c69c4d530f4d48fabe1 1286 passes/10_clouds.frag",
+    "eaedb71e1569a761d8666a10717df67fd7c480395de06db59ced96742b6a9b17 3808 passes/16_ao.frag",
+    "924a3bb349dc6fada4a61bb9dccee05e10cc24061b801a8b3eb2873799353054 2574 passes/18_fog.frag",
+    "1a08475a27b0a0e71421023374e729f6721c1b95f1cee10f6edb3179f6923d1d 3087 passes/20_light.frag",
+    "6b562c1b273e8c5011a00c49522fcaf8fc7bc4a8f8385b432d8205717dc90dea 3454 passes/30_water.frag",
+    "bea93e536d3b9b1d9a31f4f9330bc810b2229dbf8ea8b38d865c1a065faef5a8 2293 passes/40_fog_apply.frag",
+    "937ca67066403d27574fb4d0cff2e6170fb9cb9bbf9e5d24035f8fa68621d9ad 1983 passes/45_motion_blur.frag",
+    "3867f564647f664757ad77244bcbbddec977ccbc5aa346a839a101a94b1d7b6d 427 passes/50_bloom_down.frag",
+    "081a105bddabdfa79347cc9e691fef37d561738eee47aa1bff21d04184c6f5f2 1335 passes/55_exposure.frag",
+    "43d831d436c41f21c88fe79cc8c11a8c557106c6ceff19a31ea45fa93a2c7746 369 passes/60_bloom_up.frag",
+    "4cf32b2bcc2d4a2dee2c96d17f23fbadd8fce38f5d60adc89ec8e1b852d47fd9 1088 passes/90_final.frag",
+    "95dff13a36a5bc9d9ecd1907bd5dc7c1e0419ec72c24884a349a38fa975d575c 712 README.txt",
+    "d6e8a7dfbf5267376a81584fd4651a869d510f9d89a9f4b7de6c8a9955d76dd7 1128383 screenshots/screenshot_20261019_002656.png",
+    "1162d349055008400b9f1ee133b0a16026fda8c98f0556b29986875e9ad53b8a 1268517 screenshots/screenshot_20261019_002736.png",
+    "55f06e1ef3bff37e887c171a04af9fbd973fbfc6ec30cbfb6c39b03567d5c0bf 1009124 screenshots/screenshot_20261019_002823.png",
+    "ac6f1da7ce7d0da19692bbe9cff6ddb47e2bcce05b575a7a9452bbb1d220c173 1380748 screenshots/screenshot_20261108_122854.png",
+]
+thumbnails = [
+    "c90546be9df479d2091ac9538f1f8248d38d73ba114e00bdd93444f7bef08543 126873 screenshot_20261019_002656.png",
+    "2224fe8ae43ecf2b0689e128a53f3582c66a74d214b863b5a3f20c2ae175db32 161447 screenshot_20261019_002736.png",
+    "25a1f8d20e8b277eae4bf7df52442124bbb2c5cdd2b96c0a511c1043a5373539 120201 screenshot_20261019_002823.png",
+    "d690476e14b7cd22ac9db13a7ae024c0d6bebcab260b2345bc07b4a4aee06dc6 195282 screenshot_20261108_122854.png",
+]
+
+[packs.Vesper]
+name = "Vesper"
+version = "1.0"
+author = "Kohavi"
+license = "GPL-3.0-or-later AND CC-BY-4.0 AND CC0-1.0"
+description = "Cinematic and moody: volumetric fog with light shafts, dark storm clouds, a sepia film grade, soft shadows, dynamic weather with rain and thunder, mirror water and deep blue nights."
+files = [
+    "04dc18d3c9524fcf0697d307e8f79d049991f4db5720bbb96bd3b11844a2067d 8479 include/atmosphere.glsl",
+    "7ad96e8c912ace9180b16d9f770ee2a6f671247092328a34d02f40b5a210bff7 7356 include/clouds.glsl",
+    "59bfecbe048dc149c3359328b9026e670fcbc84d61515ae2c01fef74143e0741 5414 include/common.glsl",
+    "ad4c81b14b95111b8ac220e361043f6a48be7701b331e9471c02051c474853c7 10146 include/fog.glsl",
+    "77b055aa4e239a817163f822111d9aecb0f01e9fc8b59a45ba95884320b74e34 3123 include/grade.glsl",
+    "b4be86ed6f931c8c6603ab2c0163c5c2c8e9cddc1fe4b262183b4f35b4cde5b2 8496 include/light.glsl",
+    "6314bd958c99f2b6fac3ba0a89b25c305701855073f647d07334f89cc9e707cd 4667 include/shadows.glsl",
+    "b8e880c60c8b46645bfd97eef012ac79d4f0b4929f31909d68b024359bc4a9e8 4666 include/water.glsl",
+    "2985f2171b96e3b034df6311d50ea0244ecbe628563c76828c789e199c12a2f5 4299 include/weather.glsl",
+    "2f9311316e6fee342254707923dba4092034d1be240119f8d0e1c17f47d0bb7c 35582 LICENSE.txt",
+    "27d62deeee280aca95d7babe3a8bc9d24c1fafb33f662430c9ea8b674dc18966 14759 pack.toml",
+    "94cb3b8ec3a938827933f584e1fd6a208b33fe029c11bb7e3fd23ac9c9f7d2a9 625 passes/00_noise.frag",
+    "89226562ff173e02d8526351efa6f9a6b860dcde65603573db5ba92e4c947209 5531 passes/02_state.frag",
+    "8abfafb371c361b30ff6f010a4f02eae46a924a062c1429c434cae410fcb025f 744 passes/08_skymap.frag",
+    "7db73c80fad7dd3449e5ce2d899f3f65e59953d973de485b5dad1f4a198f8b06 1237 passes/10_clouds.frag",
+    "207e5dbbf95cb9996f14af4ab7891286b4a6c2a2b40e07d94fc184fee983bb7d 1388 passes/14_glow.frag",
+    "b86cd2365f6a621193131bdffc270d09f2553c86ff432427bbe306b9d41c5893 4026 passes/16_ao.frag",
+    "b4a8e3a0080e219cf555abc7ecd6b7e1c13d51d0c46df6efa5c2cb8650bb3383 1748 passes/18_fog.frag",
+    "3e7e9ffb24fb731d45ea637bd007f4326ac83621b148d40de7692f055b57a23a 2878 passes/20_light.frag",
+    "64815ec500d9f79ab50e70c7e8f41b136cfcd62bd9e5853eb90e5cfc6f8c2728 4307 passes/30_water.frag",
+    "d17b8995ba48feef60f28fada5c5af643dbe86179f73bb9bb8a83db476bccbb9 1838 passes/40_fog_apply.frag",
+    "60123e0f58dabfd8c8c4c777b8c1c9de7fe1b779b8a0f8601bcde849fa56ecee 4543 passes/45_rain.frag",
+    "95036c6695626cc53a972efdd329aedc2bfce82e32d961451318dda358f8d660 409 passes/50_bloom_down.frag",
+    "bebaf97ae35dbdf7ba357c92f4c55aea7f16c3b598a6194c2f551f95b8ae7698 1260 passes/55_exposure.frag",
+    "02ab81b7d60380d01f279fe68b7a2037c1c4ecccd39f14101197a1478995dab9 352 passes/60_bloom_up.frag",
+    "cc68edf228371bda7e172822a7a126991a4ce0ef1be6ef7249d569fd9f081a83 1328 passes/90_final.frag",
+    "50b6f9367bafd668134a9d20f5e504293c3cf7e5cc07c609dcc3f400049e62a6 433 README.txt",
+    "e3d72b4ca2e6c762eaf29349210cbdafaa2fce5dd554f7a2132ef24f19ef08c4 1229407 screenshots/screenshot_20261010_151545.png",
+    "223cb9998191d8feb55b56a21b62418105462b9a511ce212e6cf7c8d9af26cd2 1174834 screenshots/screenshot_20261010_151709.png",
+    "1e20c1f0aadec01771c781dba3f061d3daad39fda0fd19186f6a0a0958632dab 1214997 screenshots/screenshot_20261010_151733.png",
+    "7b9a3252ba1a53b78978de7f766987ebf05166b4f21dba3a915816325cd29b28 1233739 screenshots/screenshot_20261010_151927.png",
+    "a45db4f8ce80017973bb1fedce65be96a75435274d9ec313cb4025fa72152db2 853 sounds/LICENSE.txt",
+    "ff7a5a7735650c2e337ae45afd49ff0e68bf4ad597bd23c0a59fabcaec3631f6 701254 sounds/rain.ogg",
+    "f138c31056cb3fe420ab24625054b39f79ed237d1fe907dea51db0c71b13ac00 144684 sounds/thunder_far.ogg",
+    "8d42ecd0eddf004ee0b4cd0bb8ca21c77edca382f5f63fe532853e6422c19589 78438 sounds/thunder_near.ogg",
+    "ac53b1bde6f97d39f36cddb87872787b48146b20f34f3592eae677801405c3f5 473506 sounds/wind_storm.ogg",
+]
+thumbnails = [
+    "9e1b3d9ee1281dfaa1bc773288fe1d3d5a0654c05a712c061b19d214d33e893f 115891 screenshot_20261010_151545.png",
+    "7cfa1469d32af026d1d3bbed2eca6758e028b9024b0974e1bb956f6edf630cbf 103728 screenshot_20261010_151709.png",
+    "c681582636121ac053b1d83e9316387eea5617b5502b170a9f25a1f32b0b6cea 114143 screenshot_20261010_151733.png",
+    "d7d777be60959cd2613457b78ef02a1b14fcc48c81258be5243d8234c0a3c554 110190 screenshot_20261010_151927.png",
+]

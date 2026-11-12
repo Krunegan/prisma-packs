@@ -1,0 +1,665 @@
+# SPDX-FileCopyrightText: 2026 Flay Krunegan
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Vesper: cinematic and moody. Volumetric fog and storm clouds, weather,
+# a sepia grade.
+
+name = "Vesper"
+description = "Cinematic and moody: volumetric fog with light shafts, dark storm clouds, a sepia film grade, soft shadows, dynamic weather with rain and thunder, mirror water and deep blue nights."
+author = "Kohavi"
+version = "1.0"
+api = 1
+license = "GPL-3.0-or-later AND CC-BY-4.0 AND CC0-1.0"
+
+# Prisma's shadows, G-buffer and overhead map (no rain indoors); Luanti's
+# own clouds, post-processing and underwater tint are hidden.
+gbuffer = true
+hide = ["clouds", "shadows", "bloom", "volumetric_light", "exposure", "tonemapping", "underwater"]
+
+# Sounds are driven by passes/02_state.frag.
+sound_buffer = "state"
+
+# Luanti settings while playing through Prisma (the player's minetest.conf
+# is untouched). The pack replaces Luanti's fog and waves.
+[luanti]
+enable_post_processing = true
+enable_dynamic_shadows = false
+enable_bloom = false
+enable_volumetric_lighting = false
+enable_auto_exposure = false
+tone_mapping = false
+enable_water_reflections = false
+enable_fog = true
+fog_start = 0.7
+enable_waving_water = false
+
+[shadows]
+resolution = "shadow_resolution"
+distance = "shadow_distance"
+
+[overhead]
+resolution = 1024
+distance = 64
+
+# ---- Buffers (see passes/) -------------------------------------------------
+
+[buffers.state]             # 0 weather, 1 exposure, 2..5 sounds (row 1: muffle)
+size = [6, 2]
+format = "rgba32f"
+filter = "nearest"
+
+[buffers.noiseTex]             # tileable noise (01_noise.frag): one fetch per 3D octave
+size = [257, 257]
+format = "rgba16f"
+filter = "linear"
+
+[buffers.skymap]            # sky + clouds of the whole upper hemisphere (reflections)
+size = [192, 192]
+format = "rgba16f"
+filter = "linear"
+
+[buffers.clouds]            # the cloud layer: rgb = its light, a = its opacity
+scale = 0.5
+format = "rgba16f"
+
+[buffers.glow]              # light sources of the scene (coloured light), blurred by its mipmaps
+scale = 0.25
+format = "rgba16f"
+mipmaps = true
+
+[buffers.ao]                # ambient occlusion (r) and distance (g)
+scale = 0.5
+format = "rgba16f"
+filter = "nearest"
+
+[buffers.fog]               # volumetric fog: rgb = light it adds, a = distance + transmittance
+scale = 0.5
+format = "rgba32f"
+filter = "nearest"
+
+[buffers.bloom1]
+scale = 0.5
+format = "rgba16f"
+
+[buffers.bloom2]
+scale = 0.25
+format = "rgba16f"
+
+[buffers.bloom3]
+scale = 0.125
+format = "rgba16f"
+
+[buffers.bloom4]
+scale = 0.0625
+format = "rgba16f"
+
+# ---- Sounds (columns of the state buffer) -----------------------------------
+
+[sounds.rain]
+file = "sounds/rain.ogg"
+loop = true
+control = 2
+
+[sounds.wind]
+file = "sounds/wind_storm.ogg"
+loop = true
+control = 3
+
+[sounds.thunder_near]
+file = "sounds/thunder_near.ogg"
+control = 4
+voices = 3
+
+[sounds.thunder_far]
+file = "sounds/thunder_far.ogg"
+control = 5
+voices = 3
+
+# ---- Quality -------------------------------------------------------------------
+
+[options.fog_quality]
+label = "Volumetric fog"
+type = "choice"
+values = ["off", "low", "medium", "high", "ultra"]
+default = "high"
+group = "Quality"
+description = "Steps of the light-shaft fog, the heaviest effect. Off: a flat fog without shafts (much faster). If it runs slowly, lower this first, then the clouds, the shadows, the reflections and the occlusion."
+
+[options.cloud_quality]
+label = "Clouds"
+type = "choice"
+values = ["low", "medium", "high", "ultra"]
+default = "high"
+group = "Quality"
+
+[options.shadow_quality]
+label = "Shadow filtering"
+type = "choice"
+values = ["low", "medium", "high", "ultra"]
+default = "high"
+group = "Quality"
+description = "Samples of the soft shadows. Low: fixed soft edges; medium and up: edges that sharpen near what casts them (PCSS)."
+
+[options.shadow_resolution]
+label = "Shadow resolution"
+type = "choice"
+values = ["1024", "2048", "4096"]
+default = "4096"
+group = "Quality"
+
+[options.ao_quality]
+label = "Ambient occlusion"
+type = "choice"
+values = ["off", "low", "medium", "high"]
+default = "high"
+group = "Quality"
+
+[options.reflection_quality]
+label = "Reflections"
+type = "choice"
+values = ["sky only", "low", "medium", "high"]
+default = "high"
+group = "Quality"
+description = "Screen-space reflections on the water and the puddles. Sky only: they reflect just the sky and the clouds."
+
+[options.contact_shadows]
+label = "Contact shadows"
+type = "bool"
+default = true
+group = "Quality"
+description = "Fine shadows traced on screen, where the shadow map is too coarse: small gaps, plants, the base of walls."
+
+# ---- Atmosphere ------------------------------------------------------------------
+
+[options.fog_density]
+label = "Haze"
+type = "float"
+default = 0.0035
+min = 0.0
+max = 0.05
+step = 0.0005
+group = "Atmosphere"
+description = "How thick the air is. It swallows the distance and carries the light shafts. Rain and storms thicken it."
+
+[options.fog_height]
+label = "Fog height"
+type = "float"
+default = 22.0
+min = -40.0
+max = 200.0
+step = 2.0
+group = "Atmosphere"
+description = "World height (nodes) below which the mist gathers and the haze is thickest; both thin out above it."
+
+[options.fog_falloff]
+label = "Haze falloff"
+type = "float"
+default = 0.03
+min = 0.005
+max = 0.15
+step = 0.005
+group = "Atmosphere"
+description = "How fast the haze thins out with height. Low: a thick sky-high haze; high: clear air above the valleys."
+
+[options.mist]
+label = "Mist banks"
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Atmosphere"
+description = "Banks of thick mist drifting through the low ground, below the fog height. Thicker at dawn, at night and in the rain. 0 = none."
+
+[options.shafts]
+label = "Light shafts"
+type = "float"
+default = 1.0
+min = 0.0
+max = 3.0
+step = 0.05
+group = "Atmosphere"
+description = "How much the fog lights up towards the sun: the beams through trees, windows and the gaps in the clouds."
+
+[options.sky_haze]
+label = "Horizon haze"
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Atmosphere"
+description = "The distance melts into the sky. 0 = the horizon stays sharp."
+
+# ---- Weather ---------------------------------------------------------------------
+
+[options.weather]
+label = "Weather"
+type = "choice"
+values = ["dynamic", "clear", "overcast", "rain", "storm"]
+default = "dynamic"
+group = "Weather"
+description = "Dynamic: the weather changes by itself every few minutes, from clear to overcast, rain and thunderstorms."
+
+[options.weather_cycle]
+label = "Weather changes (minutes)"
+type = "float"
+default = 6.0
+min = 1.0
+max = 30.0
+step = 0.5
+group = "Weather"
+description = "How long a spell of weather lasts, roughly, with dynamic weather."
+
+[options.rain_amount]
+label = "Rain"
+type = "float"
+default = 1.0
+min = 0.0
+max = 1.5
+step = 0.05
+group = "Weather"
+description = "How hard it rains when it rains."
+
+[options.rain_streaks]
+label = "Rain streaks"
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Weather"
+
+[options.wind]
+label = "Wind"
+type = "float"
+default = 0.25
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Weather"
+description = "Slants the rain and pushes the clouds and the mist."
+
+[options.puddles]
+label = "Puddles"
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Weather"
+description = "Where the wet ground gathers water that reflects the world."
+
+[options.lightning]
+label = "Lightning"
+type = "bool"
+default = true
+group = "Weather"
+
+[options.sound_volume]
+label = "Sound volume"
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Weather"
+description = "Rain, wind and thunder. 0 = silent."
+
+# ---- Clouds ----------------------------------------------------------------------
+
+[options.cloud_cover]
+label = "Cover"
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.01
+group = "Clouds"
+description = "How much of the sky the clouds cover in fair weather. Rain and storms cover more."
+
+[options.cloud_height]
+label = "Height"
+type = "float"
+default = 200.0
+min = 60.0
+max = 800.0
+step = 10.0
+group = "Clouds"
+
+[options.cloud_thickness]
+label = "Thickness"
+type = "float"
+default = 180.0
+min = 40.0
+max = 500.0
+step = 10.0
+group = "Clouds"
+
+[options.cloud_size]
+label = "Size"
+type = "float"
+default = 1.0
+min = 0.3
+max = 3.0
+step = 0.05
+group = "Clouds"
+
+[options.cloud_darkness]
+label = "Darkness"
+type = "float"
+default = 0.55
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Clouds"
+description = "Heavy, dark clouds with bright edges, like before a storm. 0 = light, white clouds."
+
+[options.cloud_speed]
+label = "Speed"
+type = "float"
+default = 4.0
+min = 0.0
+max = 40.0
+step = 0.5
+group = "Clouds"
+
+[options.cloud_shadows]
+label = "Cloud shadows"
+type = "float"
+default = 0.85
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Clouds"
+description = "The clouds shade the ground and the fog as they pass."
+
+# ---- Light -----------------------------------------------------------------------
+
+[options.sun_intensity]
+label = "Sunlight"
+type = "float"
+default = 1.0
+min = 0.2
+max = 2.5
+step = 0.05
+group = "Light"
+
+[options.sky_light]
+label = "Sky light"
+type = "float"
+default = 1.0
+min = 0.2
+max = 2.0
+step = 0.05
+group = "Light"
+description = "The soft light of the sky that fills the shadows. Low: deep, contrasty shadows."
+
+[options.night_darkness]
+label = "Night darkness"
+type = "float"
+default = 0.75
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+description = "How dark the nights are. The moon still lights them a deep blue."
+
+[options.moon_blue]
+label = "Blue moonlight"
+type = "float"
+default = 0.8
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+
+[options.torch_brightness]
+label = "Torch brightness"
+type = "float"
+default = 1.3
+min = 0.3
+max = 3.0
+step = 0.05
+group = "Light"
+
+[options.torch_falloff]
+label = "Torch falloff"
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+description = "The light of torches fades faster with distance: hot pools of light and dark corners. 0 = Luanti's even light."
+
+[options.torch_warmth]
+label = "Torch warmth"
+type = "float"
+default = 1.0
+min = 0.0
+max = 1.5
+step = 0.05
+group = "Light"
+
+[options.torch_flicker]
+label = "Torch flicker"
+type = "float"
+default = 0.35
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+
+[options.colored_light]
+label = "Coloured light"
+type = "float"
+default = 1.0
+min = 0.0
+max = 3.0
+step = 0.05
+group = "Light"
+description = "Glowing blocks (lava, lamps, portals...) tint their surroundings and the fog with their colour."
+
+[options.foliage]
+label = "Leaf translucency"
+type = "float"
+default = 0.8
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Light"
+description = "The sun shines through leaves and grass seen against it."
+
+# ---- Shadows ---------------------------------------------------------------------
+
+[options.shadows]
+label = "Sun shadows"
+type = "bool"
+default = true
+group = "Shadows"
+
+[options.shadow_softness]
+label = "Softness"
+type = "float"
+default = 1.0
+min = 0.0
+max = 4.0
+step = 0.05
+group = "Shadows"
+description = "Size of the sun as seen from the ground: the bigger, the softer the shadows grow away from what casts them. Overcast skies soften them more."
+
+[options.shadow_distance]
+label = "Distance"
+type = "float"
+default = 96.0
+min = 32.0
+max = 256.0
+step = 8.0
+group = "Shadows"
+
+[options.ambient_occlusion]
+label = "Occlusion strength"
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Shadows"
+
+[options.ao_radius]
+label = "Occlusion radius"
+type = "float"
+default = 1.2
+min = 0.3
+max = 3.0
+step = 0.05
+group = "Shadows"
+
+# ---- Water -----------------------------------------------------------------------
+
+[options.water]
+label = "Water reflections"
+type = "float"
+default = 1.0
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Water"
+
+[options.water_murk]
+label = "Murkiness"
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Water"
+description = "Dark, brownish water that hides its bottom."
+
+[options.water_waves]
+label = "Waves"
+type = "float"
+default = 0.5
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Water"
+
+[options.underwater_fog]
+label = "Underwater fog"
+type = "float"
+default = 0.12
+min = 0.01
+max = 0.4
+step = 0.01
+group = "Water"
+
+[options.caustics]
+label = "Caustics"
+type = "float"
+default = 0.6
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Water"
+
+# ---- Image -----------------------------------------------------------------------
+
+[options.sepia]
+label = "Sepia"
+type = "float"
+default = 0.7
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+description = "The warm, old-photograph tone of the image. Night blues and torch light keep some of their colour."
+
+[options.saturation]
+label = "Saturation"
+type = "float"
+default = 0.8
+min = 0.0
+max = 1.5
+step = 0.05
+group = "Image"
+
+[options.contrast]
+label = "Contrast"
+type = "float"
+default = 1.2
+min = 0.7
+max = 1.6
+step = 0.01
+group = "Image"
+
+[options.exposure]
+label = "Exposure"
+type = "float"
+default = 0.0
+min = -3.0
+max = 3.0
+step = 0.1
+group = "Image"
+description = "In stops: +1 = twice as bright."
+
+[options.auto_exposure]
+label = "Eye adaptation"
+type = "bool"
+default = true
+group = "Image"
+description = "The eye adjusts slowly to dark caves and bright skies (within limits: nights stay dark)."
+
+[options.bloom]
+label = "Bloom"
+type = "float"
+default = 0.12
+min = 0.0
+max = 0.6
+step = 0.01
+group = "Image"
+description = "The soft glow around the sun, the sky and the lights, spread wide by the thick air."
+
+[options.black_lift]
+label = "Faded blacks"
+type = "float"
+default = 0.015
+min = 0.0
+max = 0.1
+step = 0.005
+group = "Image"
+
+[options.vignette]
+label = "Vignette"
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+
+[options.grain]
+label = "Film grain"
+type = "float"
+default = 0.25
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+
+[options.aberration]
+label = "Lens fringing"
+type = "float"
+default = 0.3
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+description = "A faint colour fringe towards the edges of the image, like an old lens."
+
+[options.letterbox]
+label = "Cinema bars"
+type = "bool"
+default = false
+group = "Image"
+description = "Black bars for a 2.39:1 cinema frame."

@@ -1,0 +1,557 @@
+# SPDX-FileCopyrightText: 2026 Flay Krunegan
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Aurora: bright, natural and vivid. Its design: docs/dev/AURORA.md in prisma-shaders.
+
+name = "Aurora"
+description = "Bright and natural: a deep blue sky with white volumetric clouds, sunbeams through the leaves, soft shadows, glowing foliage, sparkling mirror water and warm lanterns at night. Potato to Ultra profiles."
+author = "Kohavi"
+version = "0.1"
+api = 1
+license = "GPL-3.0-or-later AND CC-BY-4.0 AND CC0-1.0"
+
+# Prisma's shadows, G-buffer and overhead map; Luanti's own clouds,
+# post-processing and underwater tint are hidden.
+gbuffer = true
+# Potato keeps the G-buffer to 64 nodes (the profile's numbers; 0 = all)
+gbuffer_distance = "profile"
+hide = ["clouds", "shadows", "bloom", "volumetric_light", "exposure", "tonemapping", "underwater"]
+
+# Luanti settings while playing through Prisma. The pack replaces Luanti's
+# fog and waves.
+[luanti]
+enable_post_processing = true
+enable_dynamic_shadows = false
+enable_bloom = false
+enable_volumetric_lighting = false
+enable_auto_exposure = false
+tone_mapping = false
+enable_water_reflections = false
+enable_fog = true
+fog_start = 0.7
+enable_waving_water = false
+
+[shadows]
+resolution = "shadow_resolution"
+distance = "shadow_distance"
+# Under a hidden sky: a glow low on the horizon that casts shadows
+hidden_sky_light = [1.0, 0.18, 0.0]   # in the east, 10 degrees up
+
+# The overhead map also gives reflections the land off screen
+[overhead]
+resolution = 1024
+distance = 96
+
+# ---- Buffers (see passes/) -------------------------------------------------
+
+[buffers.state]             # (0, 0) exposure, (1, 0) under the water surface or not
+size = [2, 1]
+format = "rgba32f"
+filter = "nearest"
+
+[buffers.noiseTex]          # tileable noise (00_noise.frag): one fetch per 3D octave
+size = [257, 257]
+format = "rgba16f"
+filter = "linear"
+
+[buffers.skymap]            # sky + clouds of the whole upper hemisphere (reflections)
+size = [192, 192]
+format = "rgba16f"
+filter = "linear"
+
+[buffers.clouds]            # the cloud layer: rgb = its light, a = its opacity
+scale = 0.5
+format = "rgba16f"
+
+[buffers.ao]                # ambient occlusion (r) and distance (g)
+scale = 0.5
+format = "rgba16f"
+filter = "nearest"
+
+[buffers.fog]               # volumetric fog: rgb = light it adds, a = distance + transmittance
+scale = 0.5
+format = "rgba32f"
+filter = "nearest"
+
+[buffers.bloom1]
+scale = 0.5
+format = "rgba16f"
+
+[buffers.bloom2]
+scale = 0.25
+format = "rgba16f"
+
+[buffers.bloom3]
+scale = 0.125
+format = "rgba16f"
+
+[buffers.bloom4]
+scale = 0.0625
+format = "rgba16f"
+
+[buffers.bloom5]
+scale = 0.03125
+format = "rgba16f"
+
+# ---- Quality -------------------------------------------------------------------
+
+[options.profile]
+label = "Profile"
+type = "choice"
+values = ["potato", "low", "medium", "high", "ultra"]
+numbers = [64, 0, 0, 0, 0]   # gbuffer_distance
+default = "medium"
+group = "Quality"
+description = "The samples of every expensive effect at once: light shafts, clouds, shadow filtering, ambient occlusion, reflections and contact shadows. Ultra is the best Aurora can do; lower it if the game runs slowly. Potato is for weak graphics: plainer light shafts, clouds, mist, shadows and reflections, no motion blur, and the finer light only up to 64 nodes away; with Shadow resolution at 1024 it runs faster still."
+
+[options.shadow_resolution]
+label = "Shadow resolution"
+type = "choice"
+values = ["1024", "2048", "4096"]
+default = "2048"
+group = "Quality"
+
+# ---- Modules: whole effects off, with their cost ----------------
+
+[options.clouds]
+label = "Clouds"
+type = "bool"
+default = true
+group = "Modules"
+description = "The volumetric clouds and their shadows. Off: a clear sky."
+
+[options.atmosphere]
+label = "Atmosphere"
+type = "bool"
+default = true
+group = "Modules"
+description = "The haze, the morning mist and the light shafts. Off: clear air; the land still fades into the sky at the edge of the view."
+
+[options.shadows]
+label = "Sun shadows"
+type = "bool"
+default = true
+group = "Modules"
+
+[options.ao]
+label = "Ambient occlusion"
+type = "bool"
+default = true
+group = "Modules"
+description = "Corners, crevices and the ground beside walls darken. Its strength and radius are under Shadows."
+
+# ---- Atmosphere ------------------------------------------------------------------
+
+[options.fog_density]
+label = "Haze"
+type = "float"
+default = 0.0013
+min = 0.0
+max = 0.03
+step = 0.0002
+group = "Atmosphere"
+description = "How thick the air is: it carries the light shafts and turns the distance blue."
+
+[options.fog_falloff]
+label = "Haze falloff"
+type = "float"
+default = 0.035
+min = 0.005
+max = 0.15
+step = 0.005
+group = "Atmosphere"
+description = "How fast the haze thins out with height. Low: hazy all the way up; high: clear air above the valleys."
+
+[options.fog_height]
+label = "Mist height"
+type = "float"
+default = 6.0
+min = -40.0
+max = 200.0
+step = 2.0
+group = "Atmosphere"
+description = "World height (nodes) below which the morning mist gathers and the haze is thickest."
+
+[options.mist]
+label = "Morning mist"
+type = "float"
+default = 0.4
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Atmosphere"
+description = "Banks of mist drifting through the low ground, thicker at dawn. 0 = none."
+
+[options.shafts]
+label = "Light shafts"
+type = "float"
+default = 1.8
+min = 0.0
+max = 3.0
+step = 0.05
+group = "Atmosphere"
+description = "How much the air lights up towards the sun: the beams through the leaves and the windows."
+
+[options.sky_haze]
+label = "Horizon haze"
+type = "float"
+default = 0.35
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Atmosphere"
+description = "The distance melts into the sky. 0 = the horizon stays sharp."
+
+[options.northern_lights]
+label = "Northern lights"
+type = "float"
+default = 0.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Atmosphere"
+description = "Green and violet curtains of light over the night sky, most of them towards the north. They light nothing. 0 = none."
+
+[options.horizon_glow]
+label = "Glow of a hidden sky"
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Atmosphere"
+description = "Where the game hides the sky (a realm underground), a band of fiery light along the horizon that lights the haze, rims what faces it and shines through the gaps. 0 = none: only the lamps."
+
+[options.rainbows]
+label = "Rainbows"
+type = "float"
+default = 0.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Atmosphere"
+description = "A rainbow opposite the sun while it is out and not behind a cloud. It needs a low sun: mornings and afternoons. 0 = none."
+
+# ---- Clouds ----------------------------------------------------------------------
+
+[options.cloud_cover]
+label = "Cover"
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.01
+group = "Clouds"
+description = "How much of the sky the clouds cover. A heavily clouded sky dims and softens the sun."
+
+[options.cloud_height]
+label = "Height"
+type = "float"
+default = 190.0
+min = 60.0
+max = 800.0
+step = 10.0
+group = "Clouds"
+
+[options.cloud_thickness]
+label = "Thickness"
+type = "float"
+default = 160.0
+min = 40.0
+max = 500.0
+step = 10.0
+group = "Clouds"
+
+[options.cloud_size]
+label = "Size"
+type = "float"
+default = 1.0
+min = 0.3
+max = 3.0
+step = 0.05
+group = "Clouds"
+
+[options.cloud_speed]
+label = "Speed"
+type = "float"
+default = 3.0
+min = 0.0
+max = 40.0
+step = 0.5
+group = "Clouds"
+
+[options.cloud_shadows]
+label = "Cloud shadows"
+type = "float"
+default = 0.7
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Clouds"
+description = "The clouds shade the ground and the air as they pass."
+
+# ---- Light -----------------------------------------------------------------------
+
+[options.sun_intensity]
+label = "Sunlight"
+type = "float"
+default = 1.0
+min = 0.2
+max = 2.5
+step = 0.05
+group = "Light"
+
+[options.sky_light]
+label = "Sky light"
+type = "float"
+default = 1.0
+min = 0.2
+max = 2.0
+step = 0.05
+group = "Light"
+description = "The blue light of the sky that fills the shadows. Low: deep, contrasty shadows."
+
+[options.night_darkness]
+label = "Night darkness"
+type = "float"
+default = 0.6
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+description = "How dark the nights are. The moon still lights them a deep blue."
+
+[options.torch_brightness]
+label = "Lantern brightness"
+type = "float"
+default = 1.3
+min = 0.3
+max = 3.0
+step = 0.05
+group = "Light"
+
+[options.torch_falloff]
+label = "Lantern falloff"
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+description = "The light of torches and lanterns fades faster with distance: warm pools of light. 0 = Luanti's even light."
+
+[options.torch_warmth]
+label = "Lantern warmth"
+type = "float"
+default = 1.0
+min = 0.0
+max = 1.5
+step = 0.05
+group = "Light"
+
+[options.torch_flicker]
+label = "Lantern flicker"
+type = "float"
+default = 0.2
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Light"
+
+[options.satin]
+label = "Satin finish"
+type = "float"
+default = 0.4
+min = 0.0
+max = 1.5
+step = 0.05
+group = "Light"
+description = "Blocks in direct sunlight look matte and slightly plasticised: a soft sheen of the sun and the sky, strongest at grazing angles. The shade stays fully matte. 0 = fully matte."
+
+[options.foliage]
+label = "Leaf translucency"
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Light"
+description = "The sun shines through leaves and grass seen against it."
+
+# ---- Shadows ---------------------------------------------------------------------
+
+[options.shadow_softness]
+label = "Softness"
+type = "float"
+default = 1.0
+min = 0.0
+max = 4.0
+step = 0.05
+group = "Shadows"
+description = "Size of the sun as seen from the ground: the bigger, the softer the shadows grow away from what casts them."
+
+[options.shadow_distance]
+label = "Distance"
+type = "float"
+default = 96.0
+min = 32.0
+max = 256.0
+step = 8.0
+group = "Shadows"
+
+[options.ambient_occlusion]
+label = "Occlusion strength"
+type = "float"
+default = 1.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Shadows"
+
+[options.ao_radius]
+label = "Occlusion radius"
+type = "float"
+default = 1.2
+min = 0.3
+max = 3.0
+step = 0.05
+group = "Shadows"
+
+# ---- Water -----------------------------------------------------------------------
+
+[options.water]
+label = "Reflections"
+type = "float"
+default = 1.0
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Water"
+
+[options.water_tint]
+label = "Deep colour"
+type = "float"
+default = 0.5
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Water"
+description = "Turns Luanti's blue water towards a deep, clear teal."
+
+[options.water_waves]
+label = "Waves"
+type = "float"
+default = 0.6
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Water"
+
+[options.underwater_fog]
+label = "Underwater fog"
+type = "float"
+default = 0.07
+min = 0.01
+max = 0.4
+step = 0.01
+group = "Water"
+
+[options.caustics]
+label = "Caustics"
+type = "float"
+default = 0.8
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Water"
+
+# ---- Image -----------------------------------------------------------------------
+
+[options.exposure]
+label = "Exposure"
+type = "float"
+default = 0.0
+min = -3.0
+max = 3.0
+step = 0.1
+group = "Image"
+description = "In stops: +1 = twice as bright."
+
+[options.auto_exposure]
+label = "Eye adaptation"
+type = "bool"
+default = true
+group = "Image"
+description = "The eye adjusts slowly to dark caves and bright skies (within limits: nights stay dark)."
+
+[options.vividness]
+label = "Vividness"
+type = "float"
+default = 0.7
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+description = "A punchy, saturated look: rich greens and blues, deep shadows. 0 = the neutral tone curve."
+
+[options.saturation]
+label = "Saturation"
+type = "float"
+default = 1.0
+min = 0.0
+max = 1.6
+step = 0.05
+group = "Image"
+
+[options.contrast]
+label = "Contrast"
+type = "float"
+default = 1.0
+min = 0.7
+max = 1.5
+step = 0.01
+group = "Image"
+
+[options.bloom]
+label = "Bloom"
+type = "float"
+default = 0.08
+min = 0.0
+max = 0.5
+step = 0.01
+group = "Image"
+description = "The soft glow around the sun, the sky and the lanterns."
+
+[options.motion_blur]
+label = "Motion blur"
+type = "float"
+default = 0.0
+min = 0.0
+max = 2.0
+step = 0.05
+group = "Image"
+description = "Blur when the camera turns or moves, as a film camera's shutter. 1 = half a frame's motion. 0 = none."
+
+[options.vignette]
+label = "Vignette"
+type = "float"
+default = 0.3
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+
+[options.grain]
+label = "Film grain"
+type = "float"
+default = 0.0
+min = 0.0
+max = 1.0
+step = 0.05
+group = "Image"
+
+[options.letterbox]
+label = "Cinema bars"
+type = "bool"
+default = false
+group = "Image"
+description = "Black bars for a 2.39:1 cinema frame."

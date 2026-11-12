@@ -1,0 +1,16 @@
+rain.ogg, thunder_near.ogg and thunder_far.ogg are recordings by Flay
+Krunegan, released under the Creative Commons Attribution 4.0 International
+license (CC-BY-4.0, see LICENSES/CC-BY-4.0.txt in Prisma's source):
+https://creativecommons.org/licenses/by/4.0/
+
+  rain.ogg          lluvia_suave_60_segundos.wav, trimmed into a seamless
+                    loop (its last four seconds crossfade into its start)
+  thunder_near.ogg  trueno_rayo_cercano.wav, trailing silence trimmed
+  thunder_far.ogg   trueno_lejano.wav, trailing silence trimmed
+
+Attribution: "Vesper sounds by Flay Krunegan, CC-BY-4.0".
+
+wind_storm.ogg was synthesized procedurally (noise, filters and envelopes;
+no recordings or samples) by the Codex agent for the Tempest pack, and is
+released under CC0 1.0 (public domain dedication):
+https://creativecommons.org/publicdomain/zero/1.0/

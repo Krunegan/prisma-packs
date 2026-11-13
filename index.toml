@@ -4,7 +4,7 @@ format = 1
 [packs.Aurora]
 name = "Aurora"
 version = "0.1"
-author = "Kohavi"
+author = "Flay Krunegan"
 license = "GPL-3.0-or-later AND CC-BY-4.0 AND CC0-1.0"
 description = "Bright and natural: a deep blue sky with white volumetric clouds, sunbeams through the leaves, soft shadows, glowing foliage, sparkling mirror water and warm lanterns at night. Potato to Ultra profiles."
 files = [
@@ -19,7 +19,7 @@ files = [
     "654876c04d427077ea633e567f085a3fa5f67445941e4b8a77b03afbf809a573 4257 include/shadows.glsl",
     "f9011814422568896fb0b947d92b45104058be8865b9c0ef7c04ccd8511334d6 6368 include/water.glsl",
     "ee8221f98d92a6091eb8487f66e6205101a4824b4c18acdaaf4a37f45f6a4ae7 35167 LICENSE.txt",
-    "6e9165729465935e47f5307ab7c13f28d7e59f3bc25fc04a4685debfcdbd0fc5 12502 pack.toml",
+    "b9a8c2cbef21ef838b80e343f75d44282d826ab36b187dc2c924cd7ef2022b21 12509 pack.toml",
     "7186f0f262dd7cac75094717c29d536bb4bdfd599c315a923973675f7b414b86 625 passes/00_noise.frag",
     "d0ebb01ee5243d2740438640f039977c90085e1b6c12fda3c911024f9bab7b05 1629 passes/02_state.frag",
     "0169e229ca9c89c674920efabcf4a2331497d6204e04db28c116a52fd8ac4742 847 passes/08_skymap.frag",
@@ -50,7 +50,7 @@ thumbnails = [
 [packs.Vesper]
 name = "Vesper"
 version = "1.0"
-author = "Kohavi"
+author = "Flay Krunegan"
 license = "GPL-3.0-or-later AND CC-BY-4.0 AND CC0-1.0"
 description = "Cinematic and moody: volumetric fog with light shafts, dark storm clouds, a sepia film grade, soft shadows, dynamic weather with rain and thunder, mirror water and deep blue nights."
 files = [
@@ -64,7 +64,7 @@ files = [
     "b8e880c60c8b46645bfd97eef012ac79d4f0b4929f31909d68b024359bc4a9e8 4666 include/water.glsl",
     "657c2b8250f2a7d2c534f71635df85e6879a6c493a709cebcb72183e66cb9a36 4157 include/weather.glsl",
     "cb9eeef88e98c085a3101c4abe3ec3bacda54f59aaea610fadd59e05560899ea 35333 LICENSE.txt",
-    "db099703eeddbf4298e54c29f60261e8b3eb82b723ae1cfbe381235d2112c5d7 14094 pack.toml",
+    "a08913b1ab27f92541335d1d2d625f4bf2aa9be296ee34aee85ca49ba5b86633 14101 pack.toml",
     "94cb3b8ec3a938827933f584e1fd6a208b33fe029c11bb7e3fd23ac9c9f7d2a9 625 passes/00_noise.frag",
     "be34ec48aaa6599e58dbc3efbd988e84ea8e6dd0473957d218bd117cbdb8d406 5365 passes/02_state.frag",
     "f9b5334bccd313c96f20dffab915003cd6e9a054388bd9745533742dd0cb639e 724 passes/08_skymap.frag",

@@ -29,7 +29,8 @@ The launcher reads `index.toml` from the latest commit of the `main` branch,
 then the files of that same commit. Every file must match the size and
 SHA-256 listed in the index; a pack with any file that does not is refused.
 Only `main` is read: open pull requests, other branches and forks are not
-published.
+published. Git stores and checks out every file byte for byte
+(`.gitattributes`), so the files on any system match the index.
 
 `thumbnails/<Pack>/` holds a 480 x 270 image for each screenshot, cut from
 its middle. The launcher shows the thumbnails in its lists and downloads a
